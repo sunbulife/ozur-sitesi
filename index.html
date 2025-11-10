@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Özür Dilerim Essegimm</title>
 <style>
   body {
@@ -17,40 +17,47 @@
     overflow: hidden;
     user-select: none;
     position: relative;
+    text-align: center;
   }
+
   h1 {
-    font-size: 2.5rem;
+    font-size: clamp(1.3rem, 5vw, 2.2rem);
     color: #e91e63;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     z-index: 10;
-    position: relative;
   }
-  button {
-    font-size: 1.8rem;
-    padding: 15px 45px;
-    margin: 0 20px;
+
+  .btn {
+    font-size: clamp(1rem, 4vw, 1.6rem);
+    padding: 12px 28px;
+    margin: 0 12px;
     border:none;
     border-radius: 12px;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: background-color 0.3s ease;
+    transition: transform 0.15s ease;
     position: absolute;
     z-index: 10;
   }
+
+  .btn:active { transform: scale(0.96); }
+
   #yes {
     background-color: #4caf50;
     color: white;
-    left: 40%;
+    left: 50%;
     top: 60%;
-    position: relative; /* Başlangıçta normal konumda */
+    transform: translate(-120%, 0);
   }
+
   #no {
     background-color: #f44336;
     color: white;
-    left: 60%;
+    left: 50%;
     top: 60%;
-    position: absolute; /* Hareket için absolute */
+    transform: translate(20%, 0);
   }
+
   .heart {
     position: fixed;
     font-size: 20px;
@@ -59,13 +66,13 @@
     z-index: 5;
     will-change: transform;
   }
+
   #message {
     margin-top: 40px;
-    font-size: 1.8rem;
+    font-size: clamp(1rem, 4vw, 1.6rem);
     color: #000101;
     display: none;
     z-index: 10;
-    position: relative;
   }
 </style>
 </head>
@@ -73,106 +80,97 @@
 
 <h1>Essegim Özür Dilerim, Beni Affedermisin? 💖</h1>
 
-<button id="yes" style="position: relative; left:auto; top:auto;">Evet</button>
-<button id="no">Hayır</button>
+<button id="yes" class="btn">Evet</button>
+<button id="no" class="btn">Hayır</button>
 
-<div id="message">Aferim yola gel böyle </div>
+<div id="message">Aferim yola gel böyle 💞</div>
 
 <script>
   const yesBtn = document.getElementById('yes');
   const noBtn = document.getElementById('no');
   const message = document.getElementById('message');
+  const hearts = [];
 
-  // Butonu ekrandan tamamen çıkarmadan rastgele pozisyona taşı
-  function moveNoButton() {
-    const btnWidth = noBtn.offsetWidth;
-    const btnHeight = noBtn.offsetHeight;
-    const padding = 20; // Kenarlara biraz boşluk
-
-    const maxX = window.innerWidth - btnWidth - padding;
-    const maxY = window.innerHeight - btnHeight - padding;
-
-    let newX, newY;
-
-    // Buton çok köşeye sıkışınca başka yere gitsin
-    do {
-      newX = Math.random() * maxX + padding;
-      newY = Math.random() * maxY + padding;
-      // Uzaklık kontrolü - mevcut konuma çok yakın olmasın
-    } while (distance(newX, newY, noBtn.offsetLeft, noBtn.offsetTop) < 100);
-
-    noBtn.style.left = newX + 'px';
-    noBtn.style.top = newY + 'px';
-
-    createHearts(newX + btnWidth/2, newY + btnHeight/2);
-  }
-
-  // İki nokta arası mesafe hesapla
   function distance(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1)**2 + (y2 - y1)**2);
   }
 
-  // Kalp yarat ve ekranda hareket ettir
   function createHearts(x, y) {
-    for(let i=0; i<10; i++) {  // 20 tane kalp
+    for(let i=0; i<10; i++) {
       const heart = document.createElement('div');
       heart.classList.add('heart');
       heart.textContent = '💖';
-  
-      heart.style.left = (x + (Math.random()*60 - 30)) + 'px';
-      heart.style.top = (y + (Math.random()*60 - 30)) + 'px';
-      heart.style.fontSize = (19 + Math.random()*19) + 'px';
+      heart.style.left = (x + (Math.random()*80 - 40)) + 'px';
+      heart.style.top = (y + (Math.random()*80 - 40)) + 'px';
+      heart.style.fontSize = (16 + Math.random()*24) + 'px';
       document.body.appendChild(heart);
       hearts.push({
         el: heart,
         x: parseFloat(heart.style.left),
         y: parseFloat(heart.style.top),
-        dx: (Math.random()*2 - 1) * 0.5,
-        dy: (Math.random()*2 - 1) * 0.5,
+        dx: (Math.random()*2 - 1) * 0.6,
+        dy: (Math.random()*2 - 1) * 0.6,
+        life: 120 + Math.random()*120
       });
     }
   }
 
-  // Kalplerin hareketi için array ve animasyon fonksiyonu
-  const hearts = [];
   function animateHearts() {
-    hearts.forEach(h => {
+    for (let i = hearts.length - 1; i >= 0; i--) {
+      const h = hearts[i];
       h.x += h.dx;
       h.y += h.dy;
-
-      // Ekran sınırında sekme
-      if (h.x < 0 || h.x > window.innerWidth - 70) h.dx = -h.dx;
-      if (h.y < 0 || h.y > window.innerHeight - 70) h.dy = -h.dy;
-
+      h.life--;
       h.el.style.left = h.x + 'px';
       h.el.style.top = h.y + 'px';
-    });
+      h.el.style.opacity = Math.max(0, h.life / 240);
+
+      if (h.life <= 0) {
+        h.el.remove();
+        hearts.splice(i, 1);
+      }
+    }
     requestAnimationFrame(animateHearts);
   }
   animateHearts();
 
-  // Fare veya dokunmada kaçma olayları
+  function moveNoButton() {
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const padding = 20;
+    const maxX = window.innerWidth - btnWidth - padding;
+    const maxY = window.innerHeight - btnHeight - padding;
+
+    let newX, newY;
+    let attempts = 0;
+    do {
+      newX = Math.random() * maxX + padding;
+      newY = Math.random() * maxY + padding;
+      attempts++;
+      if (attempts > 30) break;
+    } while (distance(newX, newY, noBtn.offsetLeft, noBtn.offsetTop) < 120);
+
+    noBtn.style.left = newX + 'px';
+    noBtn.style.top = newY + 'px';
+    createHearts(newX + btnWidth/2, newY + btnHeight/2);
+  }
+
   noBtn.addEventListener('mouseenter', moveNoButton);
   noBtn.addEventListener('touchstart', e => {
     e.preventDefault();
     moveNoButton();
   });
 
-  // Evet tıklanınca mesaj göster, butonları gizle
   yesBtn.addEventListener('click', () => {
     yesBtn.style.display = 'none';
     noBtn.style.display = 'none';
     message.style.display = 'block';
-  });
-
-  // Sayfa yüklendiğinde hayır butonu uygun yerde başlasın
-  window.addEventListener('load', () => {
-    noBtn.style.left = '60%';
-    noBtn.style.top = '53%';
-    noBtn.style.position = 'absolute';
+    const rect = document.body.getBoundingClientRect();
+    createHearts(rect.width/2, rect.height/2);
+    createHearts(rect.width/2 + 40, rect.height/2 - 20);
+    createHearts(rect.width/2 - 40, rect.height/2 + 20);
   });
 </script>
 
 </body>
-
 </html>
