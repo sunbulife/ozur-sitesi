@@ -3,10 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nereye Girmek İstersin?</title>
+<title>Nereye Girmek İstersiniz?</title>
+
 <style>
   body {
-    margin:0; padding:0;
+    margin:0;
+    padding:0;
     height:100vh;
     display:flex;
     flex-direction: column;
@@ -40,7 +42,9 @@
     z-index: 10;
   }
 
-  .btn:active { transform: scale(0.96); }
+  .btn:active {
+    transform: scale(0.96);
+  }
 
   #yes {
     background-color: #4caf50;
@@ -53,9 +57,9 @@
   #no {
     background-color: #f44336;
     color: white;
-    left: 50%;
+    left: 60%;
     top: 60%;
-    transform: translate(20%, 0);
+    transition: left 0.15s ease, top 0.15s ease;
   }
 
   .heart {
@@ -76,19 +80,21 @@
   }
 </style>
 </head>
+
 <body>
 
-<h1>Nereye girmek istersin?</h1>
+<h1>Nereye girmek istersiniz?</h1>
 
 <button id="yes" class="btn">Harem'e</button>
 <button id="no" class="btn">Saray'a</button>
 
-<div id="message">heh yola gel böyle</div>
+<div id="message">heh yola gel böyle 😎</div>
 
 <script>
   const yesBtn = document.getElementById('yes');
   const noBtn = document.getElementById('no');
   const message = document.getElementById('message');
+
   const hearts = [];
 
   function distance(x1, y1, x2, y2) {
@@ -96,79 +102,128 @@
   }
 
   function createHearts(x, y) {
-    for(let i=0; i<10; i++) {
+    for(let i = 0; i < 10; i++) {
+
       const heart = document.createElement('div');
+
       heart.classList.add('heart');
       heart.textContent = '💖';
-      heart.style.left = (x + (Math.random()*80 - 40)) + 'px';
-      heart.style.top = (y + (Math.random()*80 - 40)) + 'px';
-      heart.style.fontSize = (16 + Math.random()*24) + 'px';
+
+      heart.style.left =
+        (x + (Math.random()*80 - 40)) + 'px';
+
+      heart.style.top =
+        (y + (Math.random()*80 - 40)) + 'px';
+
+      heart.style.fontSize =
+        (16 + Math.random()*24) + 'px';
+
       document.body.appendChild(heart);
+
       hearts.push({
         el: heart,
         x: parseFloat(heart.style.left),
         y: parseFloat(heart.style.top),
         dx: (Math.random()*2 - 1) * 0.6,
-        dy: (Math.random()*2 - 1) * 0.6,
-        life: 120 + Math.random()*120
+        dy: (Math.random()*2 - 1) * 0.6
       });
     }
   }
 
   function animateHearts() {
-    for (let i = hearts.length - 1; i >= 0; i--) {
+
+    for (let i = 0; i < hearts.length; i++) {
+
       const h = hearts[i];
+
       h.x += h.dx;
       h.y += h.dy;
-      h.life--;
+
       h.el.style.left = h.x + 'px';
       h.el.style.top = h.y + 'px';
-      h.el.style.opacity = Math.max(0, h.life / 240);
-
-      if (h.life <= 0) {
-        h.el.remove();
-        hearts.splice(i, 1);
-      }
     }
+
     requestAnimationFrame(animateHearts);
   }
+
   animateHearts();
 
   function moveNoButton() {
+
     const btnWidth = noBtn.offsetWidth;
     const btnHeight = noBtn.offsetHeight;
-    const padding = 20;
-    const maxX = window.innerWidth - btnWidth - padding;
-    const maxY = window.innerHeight - btnHeight - padding;
 
-    let newX, newY;
+    const padding = 20;
+
+    const maxX =
+      window.innerWidth - btnWidth - padding;
+
+    const maxY =
+      window.innerHeight - btnHeight - padding;
+
+    let newX;
+    let newY;
     let attempts = 0;
+
     do {
+
       newX = Math.random() * maxX + padding;
+
       newY = Math.random() * maxY + padding;
+
       attempts++;
+
       if (attempts > 30) break;
-    } while (distance(newX, newY, noBtn.offsetLeft, noBtn.offsetTop) < 120);
+
+    } while (
+      distance(
+        newX,
+        newY,
+        noBtn.offsetLeft,
+        noBtn.offsetTop
+      ) < 120
+    );
 
     noBtn.style.left = newX + 'px';
     noBtn.style.top = newY + 'px';
-    createHearts(newX + btnWidth/2, newY + btnHeight/2);
+
+    createHearts(
+      newX + btnWidth / 2,
+      newY + btnHeight / 2
+    );
   }
 
-  noBtn.addEventListener('mouseenter', moveNoButton);
+  noBtn.addEventListener(
+    'mouseenter',
+    moveNoButton
+  );
+
   noBtn.addEventListener('touchstart', e => {
     e.preventDefault();
     moveNoButton();
   });
 
   yesBtn.addEventListener('click', () => {
+
     yesBtn.style.display = 'none';
     noBtn.style.display = 'none';
+
     message.style.display = 'block';
-    const rect = document.body.getBoundingClientRect();
-    createHearts(rect.width/2, rect.height/2);
-    createHearts(rect.width/2 + 40, rect.height/2 - 20);
-    createHearts(rect.width/2 - 40, rect.height/2 + 20);
+
+    const rect =
+      document.body.getBoundingClientRect();
+
+    createHearts(rect.width / 2, rect.height / 2);
+
+    createHearts(
+      rect.width / 2 + 40,
+      rect.height / 2 - 20
+    );
+
+    createHearts(
+      rect.width / 2 - 40,
+      rect.height / 2 + 20
+    );
   });
 </script>
 
